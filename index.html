@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Smart Notes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 transition-colors duration-200 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div class="flex items-center space-x-4">
+                <img src="https://placehold.co/100x100" alt="Notebook icon with a graduation cap symbol representing educational notes" class="w-12 h-12" />
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">My Smart Notes</h1>
+            </div>
+            <button id="themeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+        </header>
+
+        <!-- Controls Section -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6 transition-all duration-200">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="md:col-span-3">
+                    <div class="flex space-x-3">
+                        <div class="flex-1">
+                            <label for="subjectFilter" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filter by Subject</label>
+                            <select id="subjectFilter" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 dark:text-white">
+                                <option value="">All Subjects</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label for="searchInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Search Notes</label>
+                            <input type="text" id="searchInput" placeholder="Search notes..." class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 dark:text-white">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex items-end">
+                    <button id="addNoteBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                        Add New Note
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes Container -->
+        <div id="notesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
+            <!-- Notes will be dynamically inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state flex flex-col items-center justify-center py-12">
+            <img src="https://placehold.co/300x200" alt="Empty notebook with a pencil resting on it, representing no notes available yet" class="w-64 mb-4" />
+            <h2 class="text-xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No Notes Found</h2>
+            <p class="text-gray-500 dark:text-gray-400 mb-4">Start by adding your first note!</p>
+            <button id="emptyStateAddBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                Add Note
+            </button>
+        </div>
+
+        <!-- Add/Edit Note Modal -->
+        <div id="noteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden transition-opacity duration-200">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto transition-all duration-200">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 id="modalTitle" class="text-2xl font-bold text-gray-900 dark:text-white">Add New Note</h2>
+                        <button id="closeModalBtn" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4">
+                        <input type="hidden" id="noteId">
+                        <div>
+                            <label for="noteSubject" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Subject</label>
+                            <div class="flex space-x-2">
+                                <select id="noteSubject" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 dark:text-white">
+                                    <option value="">Select a subject</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Science">Science</option>
+                                    <option value="History">History</option>
+                                    <option value="Literature">Literature</option>
+                                    <option value="Programming">Programming</option>
+                                </select>
+                                <input type="text" id="newSubjectInput" placeholder="New subject" class="flex-1 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 dark:text-white hidden">
+                                <button id="toggleSubjectBtn" class="bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-white px-3 rounded-md">+</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="noteTitle" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title</label>
+                            <input type="text" id="noteTitle" placeholder="Note title" class="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 dark:text-white">
+                        </div>
+                        <div>
+                            <label for="noteContent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content</label>
+                            <div id="noteContent" class="note-content-area rounded-md bg-white dark:bg-gray-700 dark:text-white" contenteditable="true"></div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end space-x-3 mt-6">
+                        <button id="cancelBtn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                            Cancel
+                        </button>
+                        <button id="saveBtn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition duration-200">
+                            Save Note
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Confirmation Modal -->
+        <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 hidden transition-opacity duration-200">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md transition-all duration-200">
+                <div class="p-6">
+                    <div class="mb-4">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Delete Note</h3>
+                        <p class="text-gray-600 dark:text-gray-400 mt-1">Are you sure you want to delete this note? This action cannot be undone.</p>
+                    </div>
+                    <input type="hidden" id="deleteNoteId">
+                    <div class="flex justify-end space-x-3">
+                        <button id="cancelDeleteBtn" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition duration-200">
+                            Cancel
+                        </button>
+                        <button id="confirmDeleteBtn" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition duration-200">
+                            Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+</html>
